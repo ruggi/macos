@@ -4,27 +4,27 @@
 ################################################################################
 
 function info() {
-	printf "\e[33m★ $1\e[0m\n"
+  printf "\e[33m★ $1\e[0m\n"
 }
 
 function success() {
-	printf "\e[32m✓ $1\e[0m\n\n"
+  printf "\e[32m✓ $1\e[0m\n\n"
 }
 
 function fail() {
-	printf "\n\e[31m✗ $1\e[0m\n"
+  printf "\n\e[31m✗ $1\e[0m\n"
 }
 
 function ask() {
-	while true ; do
-		read -p "➜ $1 " choice
-		case "$choice" in
-			y|Y) return 0 ;;
-			n|N) return 1 ;;
-			* );;
-		esac
-		echo 'Please answer with (Yy)es or (Nn)o.'
-	done
+  while true ; do
+    read -p "➜ $1 " choice
+    case "$choice" in
+      y|Y) return 0 ;;
+      n|N) return 1 ;;
+      * );;
+    esac
+    echo 'Please answer with (Yy)es or (Nn)o.'
+  done
 }
 
 ################################################################################
@@ -51,13 +51,13 @@ osascript -e 'tell application "System Preferences" to quit'
 if `ask "Set up dotfiles?"` ; then
   info "Setting up dotfiles"
 
-	backup_dir="$HOME/.dotfiles-`date +%s`.backup"
+  backup_dir="$HOME/.dotfiles-`date +%s`.backup"
   # Move old dotfiles folder if exists
   if [[ -e $HOME/.dotfiles ]] ; then
     mv $HOME/.dotfiles $backup_dir
   else
-		mkdir $backup_dir
-	fi
+    mkdir $backup_dir
+  fi
 
   # Move dotfiles folder to home
   cp -r dotfiles $HOME/.dotfiles
@@ -78,9 +78,9 @@ if `ask "Set up dotfiles?"` ; then
 fi
 
 if echo $shell | grep zsh > /dev/null ; then
-	source ~/.zshrc > /dev/null 2>&1
+  source ~/.zshrc > /dev/null 2>&1
 else
-	source ~/.bashrc > /dev/null 2>&1
+  source ~/.bashrc > /dev/null 2>&1
 fi
 
 ################################################################################
@@ -91,9 +91,9 @@ info "Installing Homebrew"
 success "Done"
 
 for package in `cat brew/install.list` ; do
-	info "Installing $package"
-	brew install $package
-	success "Done"
+  info "Installing $package"
+  brew install $package
+  success "Done"
 done
 
 brew upgrade
@@ -115,9 +115,9 @@ curl get.pow.cx | sh
 success "Done"
 
 for gem in `cat gems/install.list` ; do
-	info "Installing gem $gem"
-	gem install $gem
-	success "Done"
+  info "Installing gem $gem"
+  gem install $gem
+  success "Done"
 done
 
 ################################################################################
@@ -141,7 +141,7 @@ mas install 496437906
 success "Done"
 
 if `ask "Set zsh as the default shell?"` ; then
-	chsh -s `which zsh`
+  chsh -s `which zsh`
   sudo mv /etc/zshenv /etc/zprofile
 fi
 
@@ -161,13 +161,21 @@ ask "Done?"
 success "Done installing!"
 
 ################################################################################
+# PIP                                                                          #
+################################################################################
+for package in `cat pip/install.list` ; do
+	info "Installing $package"
+	pip install $package
+	success "Done"
+done
+
+################################################################################
 # VIM (wip)                                                                    #
 ################################################################################
 
 if `ask "Set up vim bundles?"` ; then
   mkdir -p $HOME/.vim/autoload $HOME/.vim/bundle
   curl -LSso $HOME/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
-
   success "Done"
 fi
 
@@ -175,8 +183,8 @@ fi
 # Tweaks (Mostly https://github.com/mathiasbynens/dotfiles/blob/master/.macos) #
 ################################################################################
 if ! `ask "Start tweaking?"` ; then
-	success "Ok, bye."
-	exit 0
+  success "Ok, bye."
+  exit 0
 fi
 
 ###############################################################################
@@ -469,9 +477,9 @@ sudo chflags nohidden /Volumes
 # Expand the following File Info panes:
 # “General”, “Open with”, and “Sharing & Permissions”
 defaults write com.apple.finder FXInfoPanesExpanded -dict \
-	General -bool true \
-	OpenWith -bool true \
-	Privileges -bool true
+General -bool true \
+OpenWith -bool true \
+Privileges -bool true
 
 ###############################################################################
 # Dock, Dashboard, and hot corners                                            #
@@ -699,28 +707,28 @@ sudo defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Vol
 # 	MENU_WEBSEARCH             (send search queries to Apple)
 # 	MENU_OTHER
 defaults write com.apple.spotlight orderedItems -array \
-	'{"enabled" = 1;"name" = "APPLICATIONS";}' \
-	'{"enabled" = 1;"name" = "SYSTEM_PREFS";}' \
-	'{"enabled" = 1;"name" = "DIRECTORIES";}' \
-	'{"enabled" = 1;"name" = "PDF";}' \
-	'{"enabled" = 1;"name" = "FONTS";}' \
-	'{"enabled" = 0;"name" = "DOCUMENTS";}' \
-	'{"enabled" = 0;"name" = "MESSAGES";}' \
-	'{"enabled" = 0;"name" = "CONTACT";}' \
-	'{"enabled" = 0;"name" = "EVENT_TODO";}' \
-	'{"enabled" = 0;"name" = "IMAGES";}' \
-	'{"enabled" = 0;"name" = "BOOKMARKS";}' \
-	'{"enabled" = 0;"name" = "MUSIC";}' \
-	'{"enabled" = 0;"name" = "MOVIES";}' \
-	'{"enabled" = 0;"name" = "PRESENTATIONS";}' \
-	'{"enabled" = 0;"name" = "SPREADSHEETS";}' \
-	'{"enabled" = 0;"name" = "SOURCE";}' \
-	'{"enabled" = 0;"name" = "MENU_DEFINITION";}' \
-	'{"enabled" = 0;"name" = "MENU_OTHER";}' \
-	'{"enabled" = 0;"name" = "MENU_CONVERSION";}' \
-	'{"enabled" = 0;"name" = "MENU_EXPRESSION";}' \
-	'{"enabled" = 0;"name" = "MENU_WEBSEARCH";}' \
-	'{"enabled" = 0;"name" = "MENU_SPOTLIGHT_SUGGESTIONS";}'
+'{"enabled" = 1;"name" = "APPLICATIONS";}' \
+'{"enabled" = 1;"name" = "SYSTEM_PREFS";}' \
+'{"enabled" = 1;"name" = "DIRECTORIES";}' \
+'{"enabled" = 1;"name" = "PDF";}' \
+'{"enabled" = 1;"name" = "FONTS";}' \
+'{"enabled" = 0;"name" = "DOCUMENTS";}' \
+'{"enabled" = 0;"name" = "MESSAGES";}' \
+'{"enabled" = 0;"name" = "CONTACT";}' \
+'{"enabled" = 0;"name" = "EVENT_TODO";}' \
+'{"enabled" = 0;"name" = "IMAGES";}' \
+'{"enabled" = 0;"name" = "BOOKMARKS";}' \
+'{"enabled" = 0;"name" = "MUSIC";}' \
+'{"enabled" = 0;"name" = "MOVIES";}' \
+'{"enabled" = 0;"name" = "PRESENTATIONS";}' \
+'{"enabled" = 0;"name" = "SPREADSHEETS";}' \
+'{"enabled" = 0;"name" = "SOURCE";}' \
+'{"enabled" = 0;"name" = "MENU_DEFINITION";}' \
+'{"enabled" = 0;"name" = "MENU_OTHER";}' \
+'{"enabled" = 0;"name" = "MENU_CONVERSION";}' \
+'{"enabled" = 0;"name" = "MENU_EXPRESSION";}' \
+'{"enabled" = 0;"name" = "MENU_WEBSEARCH";}' \
+'{"enabled" = 0;"name" = "MENU_SPOTLIGHT_SUGGESTIONS";}'
 # Load new settings before rebuilding the index
 killall mds > /dev/null 2>&1
 # Make sure indexing is enabled for the main volume
@@ -921,30 +929,30 @@ defaults write com.twitter.twitter-mac HideInBackground -bool true
 ###############################################################################
 
 for app in "Activity Monitor" \
-	"Address Book" \
-	"Calendar" \
-	"cfprefsd" \
-	"Contacts" \
-	"Dock" \
-	"Finder" \
-	"Mail" \
-	"Messages" \
-	"Photos" \
-	"Safari" \
-	"SizeUp" \
-	"SystemUIServer" \
-	"Terminal" \
-	"Transmission" \
-	"Tweetbot" \
-	"Twitter" \
-	"iCal"; do
-	killall "${app}" &> /dev/null
+"Address Book" \
+"Calendar" \
+"cfprefsd" \
+"Contacts" \
+"Dock" \
+"Finder" \
+"Mail" \
+"Messages" \
+"Photos" \
+"Safari" \
+"SizeUp" \
+"SystemUIServer" \
+"Terminal" \
+"Transmission" \
+"Tweetbot" \
+"Twitter" \
+"iCal"; do
+  killall "${app}" &> /dev/null
 done
 
 success 'All done! \\o\\'
 if `ask 'Reboot now?'` ; then
-	success "Ok, bye (rebooting)."
-	sudo reboot
+  success "Ok, bye (rebooting)."
+  sudo reboot
 else
-	success "Ok, bye (remember rebooting)"
+  success "Ok, bye (remember rebooting)"
 fi

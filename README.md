@@ -16,13 +16,13 @@ $ ./setup.sh
 
 ## What it does
 
-* Set up dotfiles and config files (mostly borrowed from [Iain's amazing repo](https://github.com/iain/dotfiles)
+* Set up dotfiles and config files (mostly borrowed from [Iain's amazing repo](https://github.com/iain/dotfiles))
 * Install Homebrew
 * Install some homebrew packages (see `brew/install.list`)
 * Install some gems (see `gems/install.list`)
 * Install some utility apps from the Mac App Store (The Unarchiver, 1Password, Better, Shush)
-* Sets up zsh
-* Installs iTerm
-* Provides configuration `plist` for iTerm with custom profiles
-* Sets up vim the way I use it
-* Tweaks the OS borrowing stuff from [this amazing script](https://github.com/mathiasbynens/dotfiles/blob/master/.macos)
+* Set up zsh
+* Install iTerm
+* Provide configuration `plist` for iTerm with custom profiles
+* Set up vim the way I use it
+* Tweak the OS (mostly from [this amazing script](https://github.com/mathiasbynens/dotfiles/blob/master/.macos))

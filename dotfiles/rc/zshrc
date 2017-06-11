@@ -1,0 +1,27 @@
+source ~/.dotfiles/config/local.zsh
+source ~/.dotfiles/config/tab_title.zsh
+source ~/.dotfiles/config/git_autocomplete.zsh
+source ~/.dotfiles/config/global.sh
+
+if [[ -f ~/.dotfiles/config/personal.zsh ]]; then
+  source ~/.dotfiles/config/personal.zsh
+fi
+
+if [[ -f ~/.dotfiles/config/personal.sh ]]; then
+  source ~/.dotfiles/config/personal.sh
+fi
+
+source $HOME/.aliases
+
+export GOPATH=$HOME/dev/go
+export GOROOT=/usr/local/opt/go/libexec
+export PATH=$PATH:$GOPATH/bin
+export PATH=$PATH:$GOROOT/bin
+export GOBIN=$GOPATH/bin
+
+export PATH=$PATH:$HOME/.rbenv/bin:$HOME/.rbenv/shims
+eval "$(rbenv init -)"
+
+export PATH=$PATH:$HOME/moai/bin/osx:$HOME/bin
+export JAVA_HOME=$(/usr/libexec/java_home)
+export PATH=$PATH:/usr/local/opt/go/libexec/bin

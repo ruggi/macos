@@ -1,0 +1,236 @@
+execute pathogen#infect()
+
+"colorscheme one
+"set background=dark
+
+inoremap jj <ESC>
+"noremap <Up> <NOP>
+"noremap <Down> <NOP>
+"noremap <Left> <NOP>
+"noremap <Right> <NOP>
+
+set number
+syntax on
+set tabstop=2 shiftwidth=2
+set expandtab
+set backspace=indent,eol,start
+set encoding=utf-8
+set showcmd
+filetype plugin indent on
+filetype plugin on
+set laststatus=2
+set nocursorline
+set splitbelow splitright
+set lazyredraw
+
+let g:ruby_path = system('echo $HOME/.rbenv/shims')
+
+set fillchars+=vert:\
+
+let g:Powerline_symbols = 'fancy'
+set encoding=utf-8
+set t_Co=256
+set fillchars+=stl:\ ,stlnc:\
+set term=xterm-256color
+set termencoding=utf-8
+
+"set mouse=a
+
+set smarttab
+
+set nocompatible
+
+set dir=~/.vim/tmp
+set history=1000
+
+autocmd FileType go setlocal shiftwidth=4 tabstop=4 noexpandtab
+" go to the last position if available
+autocmd BufReadPost *
+    \ if line("'\"") > 0 && line("'\"") <= line("$") |
+    \   exe "normal g`\"" |
+    \ endif
+
+let g:netrw_liststyle=3
+
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+
+set directory=~/.vim/tmp
+set wildignore=.svn,CVS,.git,*.o,*.a,*.class,*.mo,*.la,*.so,*.obj,*.swp,*.jpg,*.png,*.xpm,*.gif,*.pdf,*.bak,*.beam,.DS_Store,node_modules,bower_components,tmp
+let g:netrw_list_hide= '.*\.swp,.DS_Store$'
+
+let html_no_rendering=1
+set viminfo+=!
+
+let mapleader = ","
+
+map '' :set hlsearch!<CR>
+map <leader>e :Ex<CR>
+map <leader>z :NERDTreeToggle<CR>
+map <leader>a :Ag<space>
+map <leader>f :Rg<space>
+map <leader>gl :GitGutterLineHighlightsToggle<CR>
+map <leader>q :wq<CR>
+map <leader>x :TagbarToggle<CR>
+map <C-h> <C-w><left>
+map <C-l> <C-w><right>
+map <C-j> <C-w><down>
+map <C-k> <C-w><up>
+" swap two lines and return to the upper line
+map <leader>; ddpk
+map <leader>' ddkPj
+" duplicate a line
+map <leader>d Vyp
+
+" Go stuff
+let g:go_fmt_command = "goimports"
+let g:go_disable_autoinstall = 0
+
+" Highlight
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_build_constraints = 0
+
+map <A-Right> <C-W>v<C-W>
+
+let g:SuperTabDefaultCompletionType = "context"
+
+au BufRead,BufNewFile *.md set filetype=markdown
+au BufWritePost *.go silent! !ctags -R &
+
+let g:tagbar_type_go = {
+    \ 'ctagstype' : 'go',
+    \ 'kinds'     : [
+        \ 'p:package',
+        \ 'i:imports:1',
+        \ 'c:constants',
+        \ 'v:variables',
+        \ 't:types',
+        \ 'n:interfaces',
+        \ 'w:fields',
+        \ 'e:embedded',
+        \ 'm:methods',
+        \ 'r:constructor',
+        \ 'f:functions'
+    \ ],
+    \ 'sro' : '.',
+    \ 'kind2scope' : {
+        \ 't' : 'ctype',
+        \ 'n' : 'ntype'
+    \ },
+    \ 'scope2kind' : {
+        \ 'ctype' : 't',
+        \ 'ntype' : 'n'
+    \ },
+    \ 'ctagsbin'  : 'gotags',
+    \ 'ctagsargs' : '-sort -silent'
+\ }
+
+" remote all commented ruby lines
+map <leader>cd :call RemoveCommentedLines()<cr><cr>gg
+
+function! Ciao()
+  :echo "hello"
+endfunction
+
+function! RemoveCommentedLines()
+  :g/^ *#/d
+  :%s/^[\n\t\s\r]*$//g
+endfunction
+
+" clear the selection
+nnoremap <leader>ch :let @/ = ""<cr>
+
+"===== running tests =====
+function! MapCR()
+  au FileType ruby nnoremap <cr> :call RunTestFile()<cr>
+endfunction
+call MapCR()
+au FileType ruby nnoremap <leader>T :call RunNearestTest()<cr>
+au FileType ruby nnoremap <leader>y :call RunTests('')<cr>
+au Filetype ruby nnoremap <leader>c :w\|:!script/features<cr>
+au FileType ruby nnoremap <leader>w :w\|:!script/features --profile wip<cr>
+
+function! RunTestFile(...)
+    if a:0
+        let command_suffix = a:1
+    else
+        let command_suffix = ""
+    endif
+
+    " Run the tests for the previously-marked file.
+    let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\|test_.*\.py\|_test.py\)$') != -1
+    if in_test_file
+        call SetTestFile(command_suffix)
+    elseif !exists("t:grb_test_file")
+        return
+    end
+    call RunTests(t:grb_test_file)
+endfunction
+
+function! RunNearestTest()
+    let spec_line_number = line('.')
+    call RunTestFile(":" . spec_line_number)
+endfunction
+
+function! SetTestFile(command_suffix)
+    " Set the spec file that tests will be run for.
+    let t:grb_test_file=@% . a:command_suffix
+endfunction
+
+function! RunTests(filename)
+    " Write the file and run tests for the given filename
+    if expand("%") != ""
+      :w
+    end
+    if match(a:filename, '\.feature$') != -1
+        exec ":!script/features " . a:filename
+    else
+        " First choice: project-specific test script
+        if filereadable("script/test")
+            exec ":!script/test " . a:filename
+        " Fall back to the .test-commands pipe if available, assuming someone
+        " is reading the other side and running the commands
+        elseif filewritable(".test-commands")
+          let cmd = 'rspec --color --format progress --require "~/lib/vim_rspec_formatter" --format VimFormatter --out tmp/quickfix'
+          exec ":!echo " . cmd . " " . a:filename . " > .test-commands"
+
+          " Write an empty string to block until the command completes
+          sleep 100m " milliseconds
+          :!echo > .test-commands
+          redraw!
+        " Fall back to a blocking test run with Bundler
+        elseif filereadable("Gemfile")
+            exec ":!bundle exec rspec --color " . a:filename
+        " If we see python-looking tests, assume they should be run with Nose
+        elseif strlen(glob("test/**/*.py") . glob("tests/**/*.py"))
+            exec "!nosetests " . a:filename
+        " Fall back to a normal blocking test run
+        else
+            exec ":!rspec --color " . a:filename
+        end
+    end
+endfunction
+
+function! RubocopAutocorrect()
+	if match(expand("%"), '\.rb$') == -1
+		return
+	end
+
+  let l:tmp_file = tempname()
+  call writefile(getline(1,'$'), l:tmp_file)
+  let l:rubocop_cmd = "rubocop --auto-correct " . l:tmp_file
+  call system(l:rubocop_cmd)
+  let @x = join(readfile(l:tmp_file), "\n") . "\n"
+	normal ggVGdA
+	normal "xP
+	write
+endfunction
+
+au FileType ruby nnoremap <leader>= :call RubocopAutocorrect()<cr>
+
+nmap <F8> :TagbarToggle<CR>

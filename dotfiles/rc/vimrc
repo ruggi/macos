@@ -8,6 +8,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'wincent/command-t'
 Plug 'fatih/vim-go', { 'tag': '*' }
 Plug 'whatyouhide/vim-gotham'
+Plug 'jiangmiao/auto-pairs'
 call plug#end()
 
 inoremap jj <ESC>
@@ -147,6 +148,8 @@ endfunction
 
 " clear the selection
 nnoremap <leader>ch :let @/ = ""<cr>
+
+nnoremap ; :
 
 "===== running tests =====
 function! MapCR()

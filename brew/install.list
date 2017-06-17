@@ -11,3 +11,4 @@ mas
 wget
 zsh
 zsh-completions
+ctags

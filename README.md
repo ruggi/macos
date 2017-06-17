@@ -1,6 +1,6 @@
 # macOS setup
 
-![](http://i.imgur.com/T1dHcie.jpg)
+![](http://i.imgur.com/ttgPyeU.png)
 
 Scripts and utilities for setting up a macOS computer the way I use it.
 

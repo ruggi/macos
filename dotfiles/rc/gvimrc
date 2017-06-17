@@ -1,0 +1,18 @@
+set guioptions=Ace
+set number
+
+colorscheme gotham
+
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
+autocmd VimEnter * wincmd p
+
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+
+set lines=50
+set columns=120
+
+set guifont=SF\ Mono:h12
+set linespace=2

@@ -12,3 +12,5 @@ wget
 zsh
 zsh-completions
 ctags
+go-delve/delve/delve
+ssh-askpass

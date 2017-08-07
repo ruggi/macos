@@ -17,4 +17,10 @@ for package in `cat brew/install.list` ; do
   success "Done"
 done
 
+for package in `cat brew/cask.list` ; do
+  info "Installing cask $package"
+  brew cask install $package
+  success "Done"
+done
+
 brew upgrade

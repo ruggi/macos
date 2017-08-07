@@ -20,7 +20,7 @@ osascript -e 'tell application "System Preferences" to quit'
 
 source scripts/dotfiles.sh
 source scripts/homebrew.sh
-source scripts/ruby.sh
+#source scripts/ruby.sh
 source scripts/apps.sh
 source scripts/pip.sh
 source scripts/go.sh

@@ -27,7 +27,7 @@ sudo pmset -a standbydelay 86400
 sudo nvram SystemAudioVolume=" "
 
 # Set dark mode
-osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to 1'
+#osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to 1'
 
 # Set sidebar icon size to medium
 defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 2

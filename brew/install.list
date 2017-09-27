@@ -17,3 +17,6 @@ python
 git-town
 node
 thefuck
+snappy
+lz4
+protobuf

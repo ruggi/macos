@@ -14,13 +14,15 @@ if `ask "Set zsh as the default shell?"` ; then
   sudo mv /etc/zshenv /etc/zprofile
 fi
 
-if ! echo "$term" | grep iTerm2 > /dev/null ; then
-  info "Installing iTerm"
-  killall iTerm2
-  wget https://iterm2.com/downloads/stable/iTerm2-3_0_15.zip
-  unzip iTerm2-3_0_15.zip
-  sudo mv iTerm2.app /Applications
-  rm iTerm2-3_0_15.zip
+if `ask "Install iTerm?"` ; then
+  if ! echo "$term" | grep iTerm2 > /dev/null ; then
+    info "Installing iTerm"
+    killall iTerm2
+    wget https://iterm2.com/downloads/stable/iTerm2-3_0_15.zip
+    unzip iTerm2-3_0_15.zip
+    sudo mv iTerm2.app /Applications
+    rm iTerm2-3_0_15.zip
+  fi
 fi
 
 echo

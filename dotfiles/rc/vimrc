@@ -5,10 +5,11 @@ Plug 'majutsushi/tagbar'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'airblade/vim-gitgutter'
-Plug 'wincent/command-t'
 Plug 'fatih/vim-go', { 'tag': '*' }
 Plug 'whatyouhide/vim-gotham'
 Plug 'jiangmiao/auto-pairs'
+Plug 'janko-m/vim-test'
+Plug 'kien/ctrlp.vim'
 call plug#end()
 
 inoremap jj <ESC>

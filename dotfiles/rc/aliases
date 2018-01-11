@@ -4,3 +4,4 @@ alias mm="m ."
 alias am="atom ."
 alias ash="adb wait-for-device; adb shell"
 alias myip='curl -s ipinfo.io/ip'
+alias code='open -a Visual\ Studio\ Code'

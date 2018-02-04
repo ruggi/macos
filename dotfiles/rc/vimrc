@@ -5,11 +5,13 @@ Plug 'majutsushi/tagbar'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'airblade/vim-gitgutter'
-Plug 'fatih/vim-go', { 'tag': '*' }
-Plug 'whatyouhide/vim-gotham'
+Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
 Plug 'jiangmiao/auto-pairs'
-Plug 'janko-m/vim-test'
 Plug 'kien/ctrlp.vim'
+Plug 'plan9-for-vimspace/acme-colors'
+Plug 'wesgibbs/vim-irblack'
+Plug 'nanotech/jellybeans.vim'
+Plug 'AndrewRadev/splitjoin.vim'
 call plug#end()
 
 inoremap jj <ESC>
@@ -18,6 +20,8 @@ set number
 syntax on
 set tabstop=2 shiftwidth=2
 set expandtab
+set guioptions=Ace
+
 set backspace=indent,eol,start
 set encoding=utf-8
 set showcmd
@@ -84,14 +88,47 @@ map <C-l> <C-w><right>
 map <C-j> <C-w><down>
 map <C-k> <C-w><up>
 " swap two lines and return to the upper line
-map <leader>; ddpk
-map <leader>' ddkPj
+"map <leader>; ddpk
+"map <leader>' ddkPj
 " duplicate a line
 map <leader>d Vyp
+map <leader>t :CtrlP<cr>
 
 " Go stuff
-let g:go_fmt_command = "goimports"
-let g:go_disable_autoinstall = 0
+ "let g:go_disable_autoinstall = 0
+ let g:go_fmt_command = 'goimports'
+ let g:go_list_type = "quickfix"
+ let g:go_highlight_types = 1
+ let g:go_auto_type_info = 1
+ "set updatetime=100
+
+ set autowrite
+
+ function! s:build_go_files()
+   let l:file = expand('%')
+   if l:file =~# '^\f\+_test\.go$'
+     call go#test#Test(0, 1)
+   elseif l:file =~# '^\f\+\.go$'
+     call go#cmd#Build(0)
+   endif
+ endfunction
+ 
+ autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
+ autocmd FileType go nmap <leader>r <Plug>(go-run)
+ autocmd FileType go nmap <leader>; <Plug>(go-test)
+ autocmd FileType go map <leader>a :GoAlternate<cr>
+ autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
+ autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
+ autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
+ autocmd Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe') 
+ autocmd FileType go nmap <Leader>i <Plug>(go-info) 
+ map <C-n> :cnext<cr>
+ map <C-m> :cprevious<cr>
+ nnoremap <leader>a :cclose<cr>
+ autocmd FileType go nmap <Leader>m <Plug>(go-coverage-toggle)
+
+" NERDTree
+let g:NERDTreeQuitOnOpen = 1
 
 " Highlight
 let g:go_highlight_functions = 1
@@ -106,6 +143,9 @@ let g:SuperTabDefaultCompletionType = "context"
 
 au BufRead,BufNewFile *.md set filetype=markdown
 au BufWritePost *.go silent! !ctags -R &
+
+map <M-Left> <C-T>
+map <M-Right> <C-]>
 
 let g:tagbar_type_go = {
     \ 'ctagstype' : 'go',
@@ -157,7 +197,7 @@ function! MapCR()
   au FileType ruby nnoremap <cr> :call RunTestFile()<cr>
 endfunction
 call MapCR()
-au FileType ruby nnoremap <leader>T :call RunNearestTest()<cr>
+"au FileType ruby nnoremap <leader>T :call RunNearestTest()<cr>
 au FileType ruby nnoremap <leader>y :call RunTests('')<cr>
 au Filetype ruby nnoremap <leader>c :w\|:!script/features<cr>
 au FileType ruby nnoremap <leader>w :w\|:!script/features --profile wip<cr>
@@ -241,3 +281,9 @@ endfunction
 au FileType ruby nnoremap <leader>= :call RubocopAutocorrect()<cr>
 
 nmap <F8> :TagbarToggle<CR>
+
+" create folders on save
+augroup BWCCreateDir
+    autocmd!
+    autocmd BufWritePre * if expand("<afile>")!~#'^\w\+:/' && !isdirectory(expand("%:h")) | execute "silent! !mkdir -p ".shellescape(expand('%:h'), 1) | redraw! | endif
+augroup END

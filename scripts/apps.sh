@@ -26,7 +26,7 @@ if `ask "Install iTerm?"` ; then
 fi
 
 echo
-info "Open iTerm2, open Preferences (Cmd-,), check 'Load preferences from a custom folder or URL', select `pwd`, then quit iTerm2."
+info "Open iTerm2, open Preferences (Cmd-,), check 'Load preferences from a custom folder or URL', select `pwd`/iterm2, then quit iTerm2."
 ask "Done?"
 
 success "Done installing!"

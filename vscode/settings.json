@@ -1,0 +1,77 @@
+{
+    "workbench.startupEditor": "newUntitledFile",
+    "workbench.panel.defaultLocation": "bottom",
+    "workbench.fontAliasing": "auto",
+    "workbench.iconTheme": "vs-minimal",
+    "workbench.colorTheme": "Dark (Molokai)",
+
+    "editor.renderWhitespace": "none",
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.formatOnPaste": true,
+    "editor.fontFamily": "Hack",
+    "editor.trimAutoWhitespace": true,
+    "editor.rulers": [
+        80
+    ],
+
+    "search.smartCase": true,
+
+    "terminal.integrated.shell.osx": "/usr/local/bin/zsh",
+    
+    "git.confirmSync": true,
+    "git.autofetch": false,
+
+    "extensions.ignoreRecommendations": true,
+    "atomKeymap.promptV3Features": true,
+
+    "go.gopath": "/Users/federico/src/go",
+    "go.formatTool": "goreturns",
+    "go.goroot": "/usr/local/opt/go/libexec",
+    "go.testTimeout": "60s",
+
+    "rest-client.fontFamily": "Hack",
+    "rest-client.fontSize": 11,
+
+    "gitlens.advanced.messages": {
+        "suppressCommitHasNoPreviousCommitWarning": false,
+        "suppressCommitNotFoundWarning": false,
+        "suppressFileNotUnderSourceControlWarning": false,
+        "suppressGitVersionWarning": false,
+        "suppressLineUncommittedWarning": false,
+        "suppressNoRepositoryWarning": false,
+        "suppressUpdateNotice": true,
+        "suppressWelcomeNotice": true
+    },
+    
+    "better-comments.tags": [{
+            "tag": "!",
+            "color": "#FF2D00",
+            "strikethrough": false
+        },
+        {
+            "tag": "?",
+            "color": "#3498DB",
+            "strikethrough": false
+        },
+        {
+            "tag": "//",
+            "color": "#474747",
+            "strikethrough": true
+        },
+        {
+            "tag": "todo",
+            "color": "#FF8C00",
+            "strikethrough": false
+        },
+        {
+            "tag": "*",
+            "color": "#98C379",
+            "strikethrough": false
+        },
+        {
+            "tag": "fixme",
+            "color": "#FF00FF",
+            "strikethrough": false
+        }
+    ]
+}

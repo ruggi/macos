@@ -12,73 +12,66 @@ Plug 'plan9-for-vimspace/acme-colors'
 Plug 'wesgibbs/vim-irblack'
 Plug 'nanotech/jellybeans.vim'
 Plug 'AndrewRadev/splitjoin.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'chriskempson/base16-vim'
+Plug 'arcticicestudio/nord-vim'
+Plug 'wincent/terminus'
 call plug#end()
 
 inoremap jj <ESC>
 
-set number
+colorscheme base16-harmonic-dark
+
 syntax on
+filetype plugin indent on
+filetype plugin on
+set number
 set tabstop=2 shiftwidth=2
 set expandtab
 set guioptions=Ace
-
 set backspace=indent,eol,start
 set encoding=utf-8
 set showcmd
-filetype plugin indent on
-filetype plugin on
 set laststatus=2
 set nocursorline
 set splitbelow splitright
 set lazyredraw
-
-let g:ruby_path = system('echo $HOME/.rbenv/shims')
-
 set fillchars+=vert:\
-
-let g:Powerline_symbols = 'fancy'
 set encoding=utf-8
 set t_Co=256
 set fillchars+=stl:\ ,stlnc:\
 set term=xterm-256color
 set termencoding=utf-8
-
-"set mouse=a
-
 set smarttab
-
 set nocompatible
-
 set dir=~/.vim/tmp
 set history=1000
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+set directory=~/.vim/tmp
+set wildignore=.svn,CVS,.git,*.o,*.a,*.class,*.mo,*.la,*.so,*.obj,*.swp,*.jpg,*.png,*.xpm,*.gif,*.pdf,*.bak,*.beam,.DS_Store,node_modules,bower_components,tmp
+set viminfo+=!
 
-autocmd FileType go setlocal shiftwidth=4 tabstop=4 noexpandtab
+let mapleader = ","
+let g:Powerline_symbols = 'fancy'
+let g:ruby_path = system('echo $HOME/.rbenv/shims')
+let g:netrw_liststyle=3
+let g:netrw_list_hide= '.*\.swp,.DS_Store$'
+let html_no_rendering=1
+
 " go to the last position if available
 autocmd BufReadPost *
     \ if line("'\"") > 0 && line("'\"") <= line("$") |
     \   exe "normal g`\"" |
     \ endif
 
-let g:netrw_liststyle=3
-
-set hlsearch
-set incsearch
-set ignorecase
-set smartcase
-
-set directory=~/.vim/tmp
-set wildignore=.svn,CVS,.git,*.o,*.a,*.class,*.mo,*.la,*.so,*.obj,*.swp,*.jpg,*.png,*.xpm,*.gif,*.pdf,*.bak,*.beam,.DS_Store,node_modules,bower_components,tmp
-let g:netrw_list_hide= '.*\.swp,.DS_Store$'
-
-let html_no_rendering=1
-set viminfo+=!
-
-let mapleader = ","
-
 map '' :set hlsearch!<CR>
 map <leader>e :Ex<CR>
 map <leader>z :NERDTreeToggle<CR>
-map <leader>a :Ag<space>
 map <leader>f :Rg<space>
 map <leader>gl :GitGutterLineHighlightsToggle<CR>
 map <leader>q :wq<CR>
@@ -87,65 +80,62 @@ map <C-h> <C-w><left>
 map <C-l> <C-w><right>
 map <C-j> <C-w><down>
 map <C-k> <C-w><up>
-" swap two lines and return to the upper line
-"map <leader>; ddpk
-"map <leader>' ddkPj
-" duplicate a line
-map <leader>d Vyp
 map <leader>t :CtrlP<cr>
 
-" Go stuff
- "let g:go_disable_autoinstall = 0
- let g:go_fmt_command = 'goimports'
- let g:go_list_type = "quickfix"
- let g:go_highlight_types = 1
- let g:go_auto_type_info = 1
- "set updatetime=100
+" create folders on save
+augroup BWCCreateDir
+    autocmd!
+    autocmd BufWritePre * if expand("<afile>")!~#'^\w\+:/' && !isdirectory(expand("%:h")) | execute "silent! !mkdir -p ".shellescape(expand('%:h'), 1) | redraw! | endif
+augroup END
 
- set autowrite
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                                               vim-fugitive
+set diffopt+=vertical
 
- function! s:build_go_files()
-   let l:file = expand('%')
-   if l:file =~# '^\f\+_test\.go$'
-     call go#test#Test(0, 1)
-   elseif l:file =~# '^\f\+\.go$'
-     call go#cmd#Build(0)
-   endif
- endfunction
- 
- autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
- autocmd FileType go nmap <leader>r <Plug>(go-run)
- autocmd FileType go nmap <leader>; <Plug>(go-test)
- autocmd FileType go map <leader>a :GoAlternate<cr>
- autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
- autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
- autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
- autocmd Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe') 
- autocmd FileType go nmap <Leader>i <Plug>(go-info) 
- map <C-n> :cnext<cr>
- map <C-m> :cprevious<cr>
- nnoremap <leader>a :cclose<cr>
- autocmd FileType go nmap <Leader>m <Plug>(go-coverage-toggle)
-
-" NERDTree
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                                                   NERDtree
+let g:NERDTreeHijackNetrw=0
 let g:NERDTreeQuitOnOpen = 1
+map <leader>a :Ag<space>
 
-" Highlight
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                                                   Quickfix
+map <C-n> :cnext<cr>
+map <C-m> :cprevious<cr>
+nnoremap <leader>c :cclose<cr>
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                                                   Go stuff
+au BufWritePost *.go silent! !ctags -R &
+
+let g:go_fmt_command = 'goimports'
+let g:go_list_type = "quickfix"
+let g:go_highlight_types = 1
+let g:go_auto_type_info = 1
+"set updatetime=100
+set autowrite
+function! s:build_go_files()
+ let l:file = expand('%')
+ if l:file =~# '^\f\+_test\.go$'
+   call go#test#Test(0, 1)
+ elseif l:file =~# '^\f\+\.go$'
+   call go#cmd#Build(0)
+ endif
+endfunction
+
+autocmd FileType go setlocal shiftwidth=4 tabstop=4 noexpandtab
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                                                  Highlight
 let g:go_highlight_functions = 1
 let g:go_highlight_methods = 1
 let g:go_highlight_structs = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_build_constraints = 0
 
-map <A-Right> <C-W>v<C-W>
-
 let g:SuperTabDefaultCompletionType = "context"
 
 au BufRead,BufNewFile *.md set filetype=markdown
-au BufWritePost *.go silent! !ctags -R &
-
-map <M-Left> <C-T>
-map <M-Right> <C-]>
 
 let g:tagbar_type_go = {
     \ 'ctagstype' : 'go',
@@ -175,12 +165,8 @@ let g:tagbar_type_go = {
     \ 'ctagsargs' : '-sort -silent'
 \ }
 
-" remote all commented ruby lines
+" remove all commented ruby lines
 map <leader>cd :call RemoveCommentedLines()<cr><cr>gg
-
-function! Ciao()
-  :echo "hello"
-endfunction
 
 function! RemoveCommentedLines()
   :g/^ *#/d
@@ -280,10 +266,3 @@ endfunction
 
 au FileType ruby nnoremap <leader>= :call RubocopAutocorrect()<cr>
 
-nmap <F8> :TagbarToggle<CR>
-
-" create folders on save
-augroup BWCCreateDir
-    autocmd!
-    autocmd BufWritePre * if expand("<afile>")!~#'^\w\+:/' && !isdirectory(expand("%:h")) | execute "silent! !mkdir -p ".shellescape(expand('%:h'), 1) | redraw! | endif
-augroup END

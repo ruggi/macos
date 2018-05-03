@@ -1,7 +1,6 @@
 {
     "workbench.startupEditor": "newUntitledFile",
     "workbench.panel.defaultLocation": "bottom",
-    "workbench.fontAliasing": "auto",
     "workbench.iconTheme": "vs-minimal",
     "workbench.colorTheme": "Dark (Molokai)",
 

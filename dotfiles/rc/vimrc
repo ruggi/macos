@@ -80,6 +80,13 @@ map <leader>m :MerginalToggle<CR>
 map <leader>a :Ag<space>
 map <leader>` :terminal<cr>
 
+" don't move when selecting with *
+nnoremap * *<c-o>
+" search visual selection
+vnoremap \\ y/<C-R>"<CR>
+" get ready to replace last selection
+nnoremap <c-\> :%s///g<left><left>
+
 " create folders on save
 augroup BWCCreateDir
     autocmd!

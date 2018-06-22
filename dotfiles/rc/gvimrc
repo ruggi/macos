@@ -14,12 +14,8 @@ set lines=50
 set columns=120
 
 set fuoptions=maxvert,maxhorz
-"colorscheme jellybeans
-"colorscheme peaksea
-"colorscheme direwolf
 colorscheme jellybeans
 
-"set guifont=Menlo:h12
 set guifont=IBM\ Plex\ Mono:h14
 set linespace=4
 

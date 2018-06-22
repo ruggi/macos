@@ -10463,9 +10463,9 @@
 	<key>NSWindow Frame SessionsPreferences</key>
 	<string>269 126 606 469 0 0 1680 1027 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>155 525 796 473 0 0 1680 1027 </string>
+	<string>155 546 918 452 0 0 1680 1027 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>230 138 1220 773 0 0 1680 1027 </string>
+	<string>0 0 1680 1050 0 0 1680 1027 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>212 101 1270 783 0 0 1680 1027 </string>
 	<key>NeverWarnAboutShortLivedSessions_74C421CC-C900-43B6-8F0A-6152489D99BD</key>
@@ -11188,7 +11188,7 @@
 			<key>Thin Strokes</key>
 			<integer>0</integer>
 			<key>Transparency</key>
-			<real>0.086694955583756339</real>
+			<real>0.0</real>
 			<key>Unicode Version</key>
 			<integer>8</integer>
 			<key>Unlimited Scrollback</key>

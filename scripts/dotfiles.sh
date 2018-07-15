@@ -27,6 +27,9 @@ if `ask "Set up dotfiles?"` ; then
     ln -s $HOME/.dotfiles/rc/$file $HOME/$name
   done
 
+  # ZSH autosuggestions
+  git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+
   success "Done"
 fi
 

@@ -14,9 +14,12 @@ set lines=50
 set columns=120
 
 set fuoptions=maxvert,maxhorz
-colorscheme jellybeans
 
-set guifont=IBM\ Plex\ Mono:h14
+set background=dark
+colorscheme gruvbox
+
+set guifont=SF\ Mono:h14
+
 set linespace=4
 
 map <A-Left> <C-T>

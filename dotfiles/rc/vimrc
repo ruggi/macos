@@ -15,6 +15,10 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'wincent/terminus'
 Plug 'eugen0329/vim-esearch'
 Plug 'idanarye/vim-merginal'
+Plug 'gregsexton/gitv', {'on': ['Gitv']}
+Plug 'rhysd/vim-grammarous'
+Plug 'morhetz/gruvbox'
+Plug 'jremmen/vim-ripgrep'
 call plug#end()
 
 inoremap jj <ESC>
@@ -40,13 +44,11 @@ set term=xterm-256color
 set termencoding=utf-8
 set smarttab
 set nocompatible
-set dir=~/.vim/tmp
 set history=1000
 set hlsearch
 set incsearch
 set ignorecase
 set smartcase
-set directory=~/.vim/tmp
 set wildignore=.svn,CVS,.git,*.o,*.a,*.class,*.mo,*.la,*.so,*.obj,*.swp,*.jpg,*.png,*.xpm,*.gif,*.pdf,*.bak,*.beam,.DS_Store,node_modules,bower_components,tmp
 set viminfo+=!
 set cursorline
@@ -77,7 +79,8 @@ map <C-j> <C-w><down>
 map <C-k> <C-w><up>
 map <leader>t :CtrlP<CR>
 map <leader>m :MerginalToggle<CR>
-map <leader>a :Ag<space>
+"map <leader>a :Ag<space>
+map <leader>a :Rg<space>
 map <leader>` :terminal<cr>
 
 " don't move when selecting with *

@@ -3,9 +3,7 @@
 ################################################################################
 info "Installing extra fonts, install them with Font Book when it fires up."
 
-mkdir fonts
-cp /Applications/Xcode.app/Contents/SharedFrameworks/DVTKit.framework/Versions/A/Resources/Fonts/SFMono-* fonts
-open fonts/*.otf
+open /Applications/Utilities/Terminal.app/Contents/Resources/Fonts/*.otf
 
 ask "Finished installing fonts with Font Book?"
 rm -rf fonts

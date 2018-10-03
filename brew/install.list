@@ -24,3 +24,4 @@ rbenv
 mosh
 redis
 rabbitmq
+yarn

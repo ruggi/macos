@@ -29,6 +29,9 @@ sudo nvram SystemAudioVolume=" "
 # Set dark mode
 #osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to 1'
 
+# Fix Mojave font rendering
+defaults write -g CGFontRenderingFontSmoothingDisabled -bool NO
+
 # Set sidebar icon size to medium
 defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 2
 

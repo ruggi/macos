@@ -25,3 +25,5 @@ mosh
 redis
 rabbitmq
 yarn
+jq
+fd

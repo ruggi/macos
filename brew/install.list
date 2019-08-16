@@ -27,3 +27,4 @@ rabbitmq
 yarn
 jq
 fd
+cmake

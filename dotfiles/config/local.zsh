@@ -21,6 +21,11 @@ function ___rvm_prompt {
   fi
 }
 
+# pyenv support
+if which pyenv > /dev/null; then
+  eval "$(pyenv init -)";
+fi
+
 # rbenv support
 if which rbenv > /dev/null; then
   eval "$(rbenv init - zsh --no-rehash)";

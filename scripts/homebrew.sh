@@ -2,7 +2,7 @@
 # Homebrew                                                                     #
 ################################################################################
 info "Installing Homebrew"
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 success "Done"
 
 for tap in `cat brew/taps.list` ; do

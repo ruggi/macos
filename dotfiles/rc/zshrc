@@ -21,6 +21,7 @@ export GOBIN=$GOPATH/bin
 
 export PATH=$PATH:$HOME/.rbenv/bin:$HOME/.rbenv/shims
 eval "$(rbenv init -)"
+eval "$(pyenv init-)"
 
 export PATH=$PATH:$HOME/moai/bin/osx:$HOME/bin
 export JAVA_HOME=$(/usr/libexec/java_home)

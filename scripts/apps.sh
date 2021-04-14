@@ -18,10 +18,10 @@ if `ask "Install iTerm?"` ; then
   if ! echo "$term" | grep iTerm2 > /dev/null ; then
     info "Installing iTerm"
     killall iTerm2
-    wget https://iterm2.com/downloads/stable/iTerm2-3_0_15.zip
-    unzip iTerm2-3_0_15.zip
+    wget https://iterm2.com/downloads/stable/iTerm2-3_4_4.zip
+    unzip iTerm2-3_4_4.zip
     sudo mv iTerm2.app /Applications
-    rm iTerm2-3_0_15.zip
+    rm iTerm2-3_4_4.zip
   fi
 fi
 

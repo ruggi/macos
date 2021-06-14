@@ -19,7 +19,7 @@ done
 
 for package in `cat brew/cask.list` ; do
   info "Installing cask $package"
-  brew cask install $package
+  brew cask install --cask $package
   success "Done"
 done
 

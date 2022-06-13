@@ -106,6 +106,9 @@ defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 # Disable auto-correct
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
+# Drag windows with Cmd+Ctrl
+defaults write -g NSWindowShouldDragOnGesture -bool true
+
 ###############################################################################
 # SSD-specific tweaks                                                         #
 ###############################################################################
@@ -779,3 +782,4 @@ if `ask 'Reboot now?'` ; then
 else
   success "Ok, bye (remember rebooting)"
 fi
+

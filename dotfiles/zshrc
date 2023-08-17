@@ -13,3 +13,5 @@ eval $(thefuck --alias)
 
 export PATH="$PATH:/Users/federico/go/bin"
 
+eval "$(direnv hook zsh)"
+

@@ -97,6 +97,7 @@ if `ask "Setup dotfiles?"` ; then
 
     ln -s ${cwd}/zshrc ~/.zshrc
     ln -s ${cwd}/dotfiles/vimrc ~/.vimrc
+    ln -s ${cwd}/dotfiles/direnvrc ~/.direnvrc
 
     success "Done"
 fi
@@ -175,6 +176,9 @@ if `ask "Install MAS apps?"` ; then
 
     info "- Hand Mirror…"
     mas install 1502839586
+
+    info "- Wipr…"
+    mas install 1320666476
 fi
 
 # Git --------------------------------------------------------------------------

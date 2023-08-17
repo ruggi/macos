@@ -201,6 +201,12 @@ if `ask "Add the new key to Github?"` ; then
     ask "Done?"
 fi
 
+# Nix --------------------------------------------------------------------------
+if `ask "Install Nix?"` ; then
+    sh <(curl -L https://nixos.org/nix/install) --daemon
+    success "Done"
+fi
+
 # Tweaks -----------------------------------------------------------------------
 if `ask "Start tweaking?"` ; then
     xcode-select --install

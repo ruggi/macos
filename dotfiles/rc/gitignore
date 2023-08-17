@@ -1,8 +1,0 @@
-*.sw?
-.DS_Store
-*.un~
-.vim/undo/*
-.vim/.netrwhist
-*.rbc
-tags
-.env

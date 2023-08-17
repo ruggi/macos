@@ -8,11 +8,12 @@ function success() {
 
 function fail() {
   printf "\n\e[31m✗ $1\e[0m\n"
+  exit 1
 }
 
 function ask() {
   while true ; do
-    read -p "➜ $1 " choice
+    read -p "🏗️  $1 " choice
     case "$choice" in
       y|Y) return 0 ;;
       n|N) return 1 ;;

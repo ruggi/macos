@@ -1,0 +1,2 @@
+alias myip='curl -s ipinfo.io/ip'
+alias code='open -a Visual\ Studio\ Code'

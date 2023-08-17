@@ -3,6 +3,9 @@ ZSH_THEME="spaceship"
 plugins=(git)
 source $ZSH/oh-my-zsh.sh
 
+alias myip='curl -s ipinfo.io/ip'
+alias code='open -a Visual\ Studio\ Code'
+
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 eval "$(/opt/homebrew/bin/brew shellenv)"

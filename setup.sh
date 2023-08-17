@@ -77,32 +77,30 @@ if `ask "Install iTerm2?"` ; then
     cd tmp
 fi
 
-# oh-my-zsh
+# oh-my-zsh --------------------------------------------------------------------
 if `ask "Install oh-my-zsh?"` ; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
     success "Done"
 fi
 
-# spaceship
+# spaceship --------------------------------------------------------------------
 if `ask "Install spaceship prompt?"` ; then
     git clone https://github.com/spaceship-prompt/spaceship-prompt.git
     cp ./spaceship-prompt/spaceship.zsh-theme ~/.oh-my-zsh/themes
     success "Done"
 fi
 
-# dotfiles
+# dotfiles ---------------------------------------------------------------------
 if `ask "Setup dotfiles?"` ; then
     rm ~/.zshrc
-    rm -rf ~/.dotfiles
-    ln -s ${cwd}/dotfiles ~/.dotfiles
-    echo 'source ~/.dotfiles/source' >> ~/.zshrc
 
+    ln -s ${cwd}/zshrc ~/.zshrc
     ln -s ${cwd}/dotfiles/vimrc ~/.vimrc
 
     success "Done"
 fi
 
-# 1password
+# 1password --------------------------------------------------------------------
 if `ask "Install 1password?"` ; then
     wget https://downloads.1password.com/mac/1Password.zip
     unzip 1Password.zip
@@ -110,41 +108,41 @@ if `ask "Install 1password?"` ; then
     ask "Done?"
 fi
 
-# VScode
+# VSCode -----------------------------------------------------------------------
 if `ask "Install VSCode?"` ; then
     open https://code.visualstudio.com/docs/?dv=osx
     ask "Done?"
 fi
 
-# Alfred
+# Alfred -----------------------------------------------------------------------
 if `ask "Install Alfred?"` ; then
     wget https://cachefly.alfredapp.com/Alfred_5.1.2_2145.dmg
     open Alfred_5.1.2_2145.dmg
     ask "Done?"
 fi
 
-# Discord
+# Discord ----------------------------------------------------------------------
 if `ask "Install Discord?"` ; then
     wget https://dl.discordapp.net/apps/osx/0.0.276/Discord.dmg
     open Discord.dmg
     ask "Done?"
 fi
 
-# Rectangle
+# Rectangle --------------------------------------------------------------------
 if `ask "Set Rectangle config?"` ; then
     open -a Rectangle
     info "Go to Preferences, click Import and select ${cwd}/rectangle/RectangleConfig.json"
     ask "Done?"
 fi
 
-# Obsidian
+# Obsidian ---------------------------------------------------------------------
 if `ask "Install Obsidian?"` ; then
     wget https://github.com/obsidianmd/obsidian-releases/releases/download/v1.3.7/Obsidian-1.3.7-universal.dmg
     open Obsidian-1.3.7-universal.dmg
     ask "Done?"
 fi
 
-# Rocket
+# Rocket -----------------------------------------------------------------------
 if `ask "Install Rocket?"` ; then
     wget https://macrelease.matthewpalmer.net/Rocket.dmg
     open Rocket.dmg
@@ -152,7 +150,7 @@ if `ask "Install Rocket?"` ; then
     open -a Rocket
 fi
 
-# iStat Menus
+# iStat Menus ------------------------------------------------------------------
 if `ask "Install iStat Menus?"` ; then
     wget https://cdn.bjango.com/files/istatmenus6/istatmenus6.71.zip
     unzip istatmenus6.71.zip
@@ -161,7 +159,7 @@ if `ask "Install iStat Menus?"` ; then
     ask "Done?"
 fi
 
-# Bartender
+# Bartender --------------------------------------------------------------------
 if `ask "Install Bartender?"` ; then
     wget https://www.macbartender.com/B2/updates/B4Latest/Bartender%204.dmg
     open Bartender\ 4.dmg
@@ -169,7 +167,7 @@ if `ask "Install Bartender?"` ; then
     open -a Bartender\ 4
 fi
 
-# MAS
+# MAS --------------------------------------------------------------------------
 if `ask "Install MAS apps?"` ; then
     info "- The Unarchiver…"
     mas install 425424353
@@ -178,7 +176,7 @@ if `ask "Install MAS apps?"` ; then
     mas install 1502839586
 fi
 
-# Git
+# Git --------------------------------------------------------------------------
 if `ask "Configure Git?"` ; then
     read -p "Enter your git name (e.g. John Doe): " git_user_name
     read -p "Enter your git email: " git_user_email
@@ -186,7 +184,7 @@ if `ask "Configure Git?"` ; then
     git config --global user.email "${git_user_email}"
 fi
 
-# SSH
+# SSH --------------------------------------------------------------------------
 if `ask "Generate a new SSH key?"` ; then
     ssh-keygen -t ed25519 -C "${git_user_email}"
     eval "$(ssh-agent -s)"
@@ -203,7 +201,7 @@ if `ask "Add the new key to Github?"` ; then
     ask "Done?"
 fi
 
-# Tweaks
+# Tweaks -----------------------------------------------------------------------
 if `ask "Start tweaking?"` ; then
     xcode-select --install
     softwareupdate --install-rosetta --agree-to-license

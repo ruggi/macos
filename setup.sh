@@ -54,7 +54,8 @@ if `ask "Install Homebrew formulas?"` ; then
         rectangle \
         espanso \
         orbstack \
-        mas
+        mas \
+        direnv
     success "Done"
 fi
 

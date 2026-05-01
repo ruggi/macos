@@ -45,7 +45,12 @@ else
   chezmoi apply
 fi
 
-# 5. LazyVim — only if chezmoi didn't drop an nvim config
+# 5. rtk — Claude Code hook for token-optimized CLI output.
+# Runs after chezmoi so settings.json patches aren't clobbered by `chezmoi apply`.
+say "initializing rtk"
+rtk init -g --auto-patch
+
+# 6. LazyVim — only if chezmoi didn't drop an nvim config
 if [[ ! -e "$HOME/.config/nvim/init.lua" ]]; then
   say "installing LazyVim starter"
   mkdir -p "$HOME/.config"
@@ -53,7 +58,7 @@ if [[ ! -e "$HOME/.config/nvim/init.lua" ]]; then
   rm -rf "$HOME/.config/nvim/.git"
 fi
 
-# 6. 1Password SSH agent + git SSH signing
+# 7. 1Password SSH agent + git SSH signing
 say "configuring 1Password SSH agent and git signing"
 
 SSH_CFG="$HOME/.ssh/config"
@@ -98,7 +103,7 @@ git config --global url."git@github.com:".insteadOf "https://github.com/"
 git config --global gpg.format ssh
 git config --global gpg.ssh.program "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
 
-# 7. macOS preferences
+# 8. macOS preferences
 say "applying macOS preferences"
 bash "$DIR/macos.sh"
 

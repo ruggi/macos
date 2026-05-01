@@ -17,6 +17,8 @@ brew "zsh-autosuggestions"
 brew "speedtest-cli"
 brew "helix"
 brew "eza"
+brew "rtk"
+brew "git-delta"
 
 cask "1password"
 cask "1password-cli"

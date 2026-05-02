@@ -3,27 +3,63 @@ set -euo pipefail
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-say() { printf "\n\033[1;34m>>> %s\033[0m\n" "$*"; }
+if [[ -t 1 ]]; then
+  BOLD=$'\033[1m'; DIM=$'\033[2m'; RESET=$'\033[0m'
+  BLUE=$'\033[34m'; GREEN=$'\033[32m'; YELLOW=$'\033[33m'; RED=$'\033[31m'; CYAN=$'\033[36m'
+else
+  BOLD=''; DIM=''; RESET=''
+  BLUE=''; GREEN=''; YELLOW=''; RED=''; CYAN=''
+fi
 
-# Confirm App Store sign-in — `mas` needs it to install App Store apps and
-# can't sign in itself on modern macOS (Apple killed CLI auth).
-read -rp "Are you signed in to the App Store? [y/N] " ans
-case "$ans" in
-  [yY]|[yY][eE][sS]) ;;
-  *) echo "Sign in via the App Store app, then re-run." >&2; exit 1 ;;
-esac
+TOTAL=8
+step() { printf '\n%s%s━━ [%d/%d] %s%s\n' "$BOLD" "$CYAN" "$1" "$TOTAL" "$2" "$RESET"; }
+ok()   { printf '  %s✓%s %s\n' "$GREEN"  "$RESET" "$*"; }
+run()  { printf '  %s→%s %s\n' "$BLUE"   "$RESET" "$*"; }
+warn() { printf '  %s!%s %s\n' "$YELLOW" "$RESET" "$*"; }
+fail() { printf '  %s✗%s %s\n' "$RED"    "$RESET" "$*" >&2; }
+
+confirm() {
+  local ans
+  read -rp "  $1 [y/N] " ans
+  [[ "$ans" =~ ^[yY]([eE][sS])?$ ]]
+}
+
+printf '\n%s%smacOS bootstrap%s\n' "$BOLD" "$BLUE" "$RESET"
+printf '%sa few prompts up front, then this runs unattended.%s\n' "$DIM" "$RESET"
+
+# ── prompts ──────────────────────────────────────────────────────────────────
+# `mas` can't sign in to the App Store on modern macOS — Apple killed CLI auth.
+if ! confirm "signed in to the App Store?"; then
+  fail 'sign in via the App Store app, then re-run.'
+  exit 1
+fi
 
 # 1. Xcode Command Line Tools
-if ! xcode-select -p >/dev/null 2>&1; then
-  say "installing Xcode Command Line Tools"
+# Done first because git (needed for the next prompt) ships with CLT.
+step 1 "Xcode Command Line Tools"
+if xcode-select -p >/dev/null 2>&1; then
+  ok "already installed"
+else
+  run "installing — a system dialog will pop"
   xcode-select --install
-  echo "wait for the CLT install to finish, then re-run this script"
+  warn "wait for the installer to finish, then re-run this script"
   exit 0
 fi
 
+# Collect git identity now so steps 2–8 can run unattended. Without these,
+# git falls back to whoami@hostname, which on a Tailscale machine becomes
+# <host>.ts.net.
+GIT_NAME=$(git config --global --get user.name  2>/dev/null || true)
+GIT_EMAIL=$(git config --global --get user.email 2>/dev/null || true)
+[[ -z "$GIT_NAME"  ]] && read -rp "  git user.name: "  GIT_NAME
+[[ -z "$GIT_EMAIL" ]] && read -rp "  git user.email: " GIT_EMAIL
+
 # 2. Homebrew
-if ! command -v brew >/dev/null 2>&1; then
-  say "installing Homebrew"
+step 2 "Homebrew"
+if command -v brew >/dev/null 2>&1; then
+  ok "already installed"
+else
+  run "installing"
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 if [[ -x /opt/homebrew/bin/brew ]]; then
@@ -33,33 +69,39 @@ elif [[ -x /usr/local/bin/brew ]]; then
 fi
 
 # 3. Brew packages
-say "installing brew packages"
+step 3 "Homebrew packages"
+run "brew bundle"
 brew bundle --file="$DIR/Brewfile"
 
 # 4. chezmoi
+step 4 "chezmoi"
 if [[ ! -d "$HOME/.local/share/chezmoi" ]]; then
-  say "initializing chezmoi from github.com/ruggi/dotfiles"
+  run "init from github.com/ruggi/dotfiles"
   chezmoi init --apply ruggi
 else
-  say "applying chezmoi"
+  run "apply"
   chezmoi apply
 fi
 
 # 5. rtk — Claude Code hook for token-optimized CLI output.
 # Runs after chezmoi so settings.json patches aren't clobbered by `chezmoi apply`.
-say "initializing rtk"
+step 5 "rtk (Claude Code hook)"
+run "init"
 rtk init -g --auto-patch
 
 # 6. LazyVim — only if chezmoi didn't drop an nvim config
-if [[ ! -e "$HOME/.config/nvim/init.lua" ]]; then
-  say "installing LazyVim starter"
+step 6 "LazyVim"
+if [[ -e "$HOME/.config/nvim/init.lua" ]]; then
+  ok "nvim config already present, skipping"
+else
+  run "installing starter"
   mkdir -p "$HOME/.config"
   git clone https://github.com/LazyVim/starter "$HOME/.config/nvim"
   rm -rf "$HOME/.config/nvim/.git"
 fi
 
 # 7. 1Password SSH agent + git SSH signing
-say "configuring 1Password SSH agent and git signing"
+step 7 "1Password SSH agent + git signing"
 
 SSH_CFG="$HOME/.ssh/config"
 SSH_BEGIN="# >>> 1Password SSH agent >>>"
@@ -83,17 +125,10 @@ awk -v begin="$SSH_BEGIN" -v end="$SSH_END" '
 } > "$SSH_CFG"
 rm -f "$SSH_CFG.tmp"
 chmod 600 "$SSH_CFG"
+ok "ssh config updated"
 
-# Prompt for git identity if missing — without these, git falls back to
-# whoami@hostname, which on a Tailscale machine becomes <host>.ts.net.
-if ! git config --global --get user.name >/dev/null; then
-  read -rp "Git user.name: " git_name
-  [[ -n "$git_name" ]] && git config --global user.name "$git_name"
-fi
-if ! git config --global --get user.email >/dev/null; then
-  read -rp "Git user.email: " git_email
-  [[ -n "$git_email" ]] && git config --global user.email "$git_email"
-fi
+[[ -n "$GIT_NAME"  ]] && git config --global user.name  "$GIT_NAME"
+[[ -n "$GIT_EMAIL" ]] && git config --global user.email "$GIT_EMAIL"
 
 # Always talk to GitHub over SSH, even when the remote URL is HTTPS.
 git config --global url."git@github.com:".insteadOf "https://github.com/"
@@ -102,21 +137,30 @@ git config --global url."git@github.com:".insteadOf "https://github.com/"
 # user.signingkey + commit.gpgsign are left for the user to set per-key.
 git config --global gpg.format ssh
 git config --global gpg.ssh.program "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+ok "git configured"
 
 # 8. macOS preferences
-say "applying macOS preferences"
+step 8 "macOS preferences"
+run "applying"
 bash "$DIR/macos.sh"
 
-say "done"
-cat <<EOF
+printf '\n%s%s━━ done%s\n\n' "$BOLD" "$GREEN" "$RESET"
 
-manual steps remaining:
-  - sign in to 1Password, then enable "Use the SSH agent" in Settings → Developer
-  - after adding an SSH key to 1Password, enable commit signing:
-      git config --global user.signingkey "ssh-ed25519 AAAA..."   # your pubkey
-      git config --global commit.gpgsign true
-  - run 'claude' to authenticate Claude Code
-  - sign in to AdGuard
-  - open Rectangle and import $DIR/rectangle/RectangleConfig.json
-  - log out and back in for some prefs to take effect
+cat <<EOF
+${BOLD}manual steps remaining${RESET}
+
+  ${CYAN}1Password${RESET}
+    • sign in, then enable "Use the SSH agent" in Settings → Developer
+    • after adding an SSH key, enable commit signing:
+        git config --global user.signingkey "ssh-ed25519 AAAA..."
+        git config --global commit.gpgsign true
+
+  ${CYAN}apps${RESET}
+    • run 'claude' to authenticate Claude Code
+    • sign in to AdGuard
+    • open Rectangle and import $DIR/rectangle/RectangleConfig.json
+
+  ${CYAN}finally${RESET}
+    • log out and back in for some prefs to take effect
+
 EOF

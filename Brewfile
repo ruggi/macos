@@ -34,5 +34,7 @@ cask "font-jetbrains-mono-nerd-font"
 cask "ghostty"
 cask "rectangle"
 cask "tailscale-app"
+cask "vscodium"
+cask "zed"
 
 mas "TextSniper", id: 1528890965

@@ -24,6 +24,7 @@ brew "ltex-ls"
 brew "golangci-lint"
 brew "rust-analyzer"
 brew "zls"
+brew "taplo"
 
 cask "1password"
 cask "1password-cli"

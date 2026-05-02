@@ -38,3 +38,4 @@ cask "vscodium"
 cask "zed"
 
 mas "TextSniper", id: 1528890965
+mas "Noir",       id: 1581140954

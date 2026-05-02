@@ -69,6 +69,11 @@ defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
 # --- UI / windows -------------------------------------------------------------
 
+# Auto switch between light and dark mode based on time of day.
+# AppleInterfaceStyle pins to Dark when set, so it must be removed for Auto to win.
+defaults write NSGlobalDomain AppleInterfaceStyleSwitchesAutomatically -bool true
+defaults delete NSGlobalDomain AppleInterfaceStyle 2>/dev/null || true
+
 # Medium-sized sidebar icons
 defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 2
 # Disable the animated focus ring

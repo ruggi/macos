@@ -220,6 +220,8 @@ defaults write com.apple.Safari UniversalSearchEnabled -bool false
 # Tab highlights every element on a page (not just links/form fields)
 defaults write com.apple.Safari WebKitTabToLinksPreferenceKey -bool true
 defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2TabsToLinks -bool true
+# Compact tab layout (merge address bar and tab bar)
+defaults write com.apple.Safari ShowStandaloneTabBar -bool false
 # Show the full URL in the address bar (not just the domain)
 defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
 # Show the URL status bar (link preview at bottom-left on hover; toggled by Cmd+/)

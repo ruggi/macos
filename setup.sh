@@ -11,7 +11,7 @@ else
   BLUE=''; GREEN=''; YELLOW=''; RED=''; CYAN=''
 fi
 
-TOTAL=8
+TOTAL=9
 step() { printf '\n%s%s━━ [%d/%d] %s%s\n' "$BOLD" "$CYAN" "$1" "$TOTAL" "$2" "$RESET"; }
 ok()   { printf '  %s✓%s %s\n' "$GREEN"  "$RESET" "$*"; }
 run()  { printf '  %s→%s %s\n' "$BLUE"   "$RESET" "$*"; }
@@ -24,8 +24,21 @@ confirm() {
   [[ "$ans" =~ ^[yY]([eE][sS])?$ ]]
 }
 
+ICLOUD_DIR="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
+THINK_SRC="$ICLOUD_DIR/think"
+
 printf '\n%s%smacOS bootstrap%s\n' "$BOLD" "$BLUE" "$RESET"
 printf '%sa few prompts up front, then this runs unattended.%s\n' "$DIM" "$RESET"
+
+# ── prerequisite: iCloud Drive ────────────────────────────────────────────────
+# Everything that follows may depend on iCloud-backed folders (e.g. ~/think).
+# Bail out early so the user can sort this before any changes are made.
+if [[ ! -d "$ICLOUD_DIR" ]]; then
+  fail "iCloud Drive not found ($ICLOUD_DIR)."
+  fail "Sign in to iCloud and enable iCloud Drive, then re-run."
+  exit 1
+fi
+ok "iCloud Drive active"
 
 # ── prompts ──────────────────────────────────────────────────────────────────
 # `mas` can't sign in to the App Store on modern macOS — Apple killed CLI auth.
@@ -144,6 +157,50 @@ step 8 "macOS preferences"
 run "applying"
 bash "$DIR/macos.sh"
 
+# 9. ~/think ↔ iCloud Drive (bidirectional sync via unison + fswatch)
+step 9 "~/think ↔ iCloud Drive sync"
+
+mkdir -p "$HOME/think" "$THINK_SRC"
+ok "directories ready"
+
+SYNC_SCRIPT="$HOME/scripts/think-sync.sh"
+mkdir -p "$HOME/scripts"
+cp "$DIR/think-sync.sh" "$SYNC_SCRIPT"
+chmod +x "$SYNC_SCRIPT"
+ok "sync script → $SYNC_SCRIPT"
+
+PLIST_DIR="$HOME/Library/LaunchAgents"
+PLIST="$PLIST_DIR/com.ruggi.think-sync.plist"
+mkdir -p "$PLIST_DIR"
+cat > "$PLIST" <<PLIST_EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.ruggi.think-sync</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>$SYNC_SCRIPT</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>$HOME/Library/Logs/think-sync.log</string>
+    <key>StandardErrorPath</key>
+    <string>$HOME/Library/Logs/think-sync.log</string>
+</dict>
+</plist>
+PLIST_EOF
+ok "LaunchAgent → $PLIST"
+
+launchctl bootout "gui/$(id -u)" "$PLIST" 2>/dev/null || true
+launchctl bootstrap "gui/$(id -u)" "$PLIST"
+ok "think-sync agent running"
+
 printf '\n%s%s━━ done%s\n\n' "$BOLD" "$GREEN" "$RESET"
 
 cat <<EOF
@@ -159,6 +216,10 @@ ${BOLD}manual steps remaining${RESET}
     • run 'claude' to authenticate Claude Code
     • sign in to AdGuard
     • open Rectangle and import $DIR/rectangle/RectangleConfig.json
+
+  ${CYAN}think-sync${RESET}
+    • monitor the ~/think ↔ iCloud Drive sync:
+        tail -f ~/Library/Logs/think-sync.log
 
   ${CYAN}finally${RESET}
     • log out and back in for some prefs to take effect

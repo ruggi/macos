@@ -1,4 +1,6 @@
 brew "chezmoi"
+brew "fswatch"
+brew "unison"
 brew "fd"
 brew "fzf"
 brew "git"
@@ -42,3 +44,4 @@ cask "mac-mouse-fix"
 
 mas "TextSniper", id: 1528890965
 mas "Noir",       id: 1592917505
+mas "SponsorBlock", id: 1573461917

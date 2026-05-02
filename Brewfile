@@ -36,6 +36,9 @@ cask "rectangle"
 cask "tailscale-app"
 cask "vscodium"
 cask "zed"
+cask "betterdisplay"
+cask "bettertouchtool"
+cask "mac-mouse-fix"
 
 mas "TextSniper", id: 1528890965
-mas "Noir",       id: 1581140954
+mas "Noir",       id: 1592917505

@@ -67,6 +67,35 @@ defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 # No autocorrect
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
+# --- Modifier keys ------------------------------------------------------------
+
+# Remap Caps Lock (HID 0x700000039) to Left Control (HID 0x7000000E0) on every
+# attached keyboard. hidutil mappings don't survive reboots or new keyboards,
+# so a LaunchAgent re-applies the mapping at login.
+CAPS_TO_CTRL_PLIST="$HOME/Library/LaunchAgents/com.local.CapsLockToControl.plist"
+mkdir -p "$HOME/Library/LaunchAgents"
+cat > "$CAPS_TO_CTRL_PLIST" <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.local.CapsLockToControl</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/hidutil</string>
+        <string>property</string>
+        <string>--set</string>
+        <string>{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000E0}]}</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+</dict>
+</plist>
+EOF
+launchctl unload "$CAPS_TO_CTRL_PLIST" 2>/dev/null || true
+launchctl load "$CAPS_TO_CTRL_PLIST"
+
 # --- UI / windows -------------------------------------------------------------
 
 # Auto switch between light and dark mode based on time of day.

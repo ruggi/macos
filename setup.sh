@@ -11,7 +11,7 @@ else
   BLUE=''; GREEN=''; YELLOW=''; RED=''; CYAN=''
 fi
 
-TOTAL=9
+TOTAL=10
 step() { printf '\n%s%s━━ [%d/%d] %s%s\n' "$BOLD" "$CYAN" "$1" "$TOTAL" "$2" "$RESET"; }
 ok()   { printf '  %s✓%s %s\n' "$GREEN"  "$RESET" "$*"; }
 run()  { printf '  %s→%s %s\n' "$BLUE"   "$RESET" "$*"; }
@@ -25,14 +25,13 @@ confirm() {
 }
 
 ICLOUD_DIR="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
-THINK_SRC="$ICLOUD_DIR/think"
 
 printf '\n%s%smacOS bootstrap%s\n' "$BOLD" "$BLUE" "$RESET"
 printf '%sa few prompts up front, then this runs unattended.%s\n' "$DIM" "$RESET"
 
 # ── prerequisite: iCloud Drive ────────────────────────────────────────────────
-# Everything that follows may depend on iCloud-backed folders (e.g. ~/think).
-# Bail out early so the user can sort this before any changes are made.
+# The Cryptomator vault used for AI agent sessions lives in iCloud Drive, so
+# bail out early if iCloud isn't set up before any changes are made.
 if [[ ! -d "$ICLOUD_DIR" ]]; then
   fail "iCloud Drive not found ($ICLOUD_DIR)."
   fail "Sign in to iCloud and enable iCloud Drive, then re-run."
@@ -86,24 +85,37 @@ step 3 "Homebrew packages"
 run "brew bundle"
 brew bundle --file="$DIR/Brewfile"
 
-# 4. chezmoi
-step 4 "chezmoi"
-if [[ ! -d "$HOME/.local/share/chezmoi" ]]; then
-  run "init from github.com/ruggi/dotfiles"
-  chezmoi init --apply ruggi
+# 4. dotfiles via stow
+# Cloned over HTTPS because the SSH agent + insteadOf rewrite aren't set up
+# until step 8. Re-stow on every run so partial states heal idempotently.
+step 4 "dotfiles (stow)"
+DOTFILES_DIR="$HOME/dotfiles"
+if [[ ! -d "$DOTFILES_DIR" ]]; then
+  run "cloning ruggi/dotfiles"
+  git clone https://github.com/ruggi/dotfiles.git "$DOTFILES_DIR"
 else
-  run "apply"
-  chezmoi apply
+  ok "dotfiles already cloned"
 fi
+run "stow common"
+stow -d "$DOTFILES_DIR" -t "$HOME" -R common
 
 # 5. rtk — Claude Code hook for token-optimized CLI output.
-# Runs after chezmoi so settings.json patches aren't clobbered by `chezmoi apply`.
+# Runs after stow so the symlinked settings.json exists before rtk patches it.
 step 5 "rtk (Claude Code hook)"
 run "init"
 rtk init -g --auto-patch
 
-# 6. LazyVim — only if chezmoi didn't drop an nvim config
-step 6 "LazyVim"
+# 6. pi — agent harness (https://pi.dev), npm-installed.
+step 6 "pi (agent harness)"
+if command -v pi >/dev/null 2>&1; then
+  ok "already installed"
+else
+  run "npm install -g @mariozechner/pi-coding-agent"
+  npm install -g @mariozechner/pi-coding-agent
+fi
+
+# 7. LazyVim — only if stow didn't drop an nvim config
+step 7 "LazyVim"
 if [[ -e "$HOME/.config/nvim/init.lua" ]]; then
   ok "nvim config already present, skipping"
 else
@@ -113,8 +125,8 @@ else
   rm -rf "$HOME/.config/nvim/.git"
 fi
 
-# 7. 1Password SSH agent + git SSH signing
-step 7 "1Password SSH agent + git signing"
+# 8. 1Password SSH agent + git SSH signing
+step 8 "1Password SSH agent + git signing"
 
 SSH_CFG="$HOME/.ssh/config"
 SSH_BEGIN="# >>> 1Password SSH agent >>>"
@@ -152,54 +164,21 @@ git config --global gpg.format ssh
 git config --global gpg.ssh.program "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
 ok "git configured"
 
-# 8. macOS preferences
-step 8 "macOS preferences"
+# 9. macOS preferences
+step 9 "macOS preferences"
 run "applying"
 bash "$DIR/macos.sh"
 
-# 9. ~/think ↔ iCloud Drive (bidirectional sync via unison + fswatch)
-step 9 "~/think ↔ iCloud Drive sync"
-
-mkdir -p "$HOME/think" "$THINK_SRC"
-ok "directories ready"
-
-SYNC_SCRIPT="$HOME/scripts/think-sync.sh"
-mkdir -p "$HOME/scripts"
-cp "$DIR/think-sync.sh" "$SYNC_SCRIPT"
-chmod +x "$SYNC_SCRIPT"
-ok "sync script → $SYNC_SCRIPT"
-
-PLIST_DIR="$HOME/Library/LaunchAgents"
-PLIST="$PLIST_DIR/com.ruggi.think-sync.plist"
-mkdir -p "$PLIST_DIR"
-cat > "$PLIST" <<PLIST_EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>com.ruggi.think-sync</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/bin/bash</string>
-        <string>$SYNC_SCRIPT</string>
-    </array>
-    <key>RunAtLoad</key>
-    <true/>
-    <key>KeepAlive</key>
-    <true/>
-    <key>StandardOutPath</key>
-    <string>$HOME/Library/Logs/think-sync.log</string>
-    <key>StandardErrorPath</key>
-    <string>$HOME/Library/Logs/think-sync.log</string>
-</dict>
-</plist>
-PLIST_EOF
-ok "LaunchAgent → $PLIST"
-
-launchctl bootout "gui/$(id -u)" "$PLIST" 2>/dev/null || true
-launchctl bootstrap "gui/$(id -u)" "$PLIST"
-ok "think-sync agent running"
+# 10. Cryptomator — vault on iCloud Drive holds the AI agent sessions.
+# Launch it so the user can unlock the vault now (everything else is done).
+step 10 "Cryptomator"
+if confirm "launch Cryptomator now to unlock your vault?"; then
+  run "opening Cryptomator"
+  open -a Cryptomator
+  ok "Cryptomator launched"
+else
+  ok "skipped — launch it later from /Applications"
+fi
 
 printf '\n%s%s━━ done%s\n\n' "$BOLD" "$GREEN" "$RESET"
 
@@ -216,10 +195,6 @@ ${BOLD}manual steps remaining${RESET}
     • run 'claude' to authenticate Claude Code
     • sign in to AdGuard
     • open Rectangle and import $DIR/rectangle/RectangleConfig.json
-
-  ${CYAN}think-sync${RESET}
-    • monitor the ~/think ↔ iCloud Drive sync:
-        tail -f ~/Library/Logs/think-sync.log
 
   ${CYAN}finally${RESET}
     • log out and back in for some prefs to take effect

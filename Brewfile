@@ -43,6 +43,7 @@ cask "zed"
 cask "betterdisplay"
 cask "bettertouchtool"
 cask "mac-mouse-fix"
+cask "keepingyouawake"
 
 mas "TextSniper", id: 1528890965
 mas "Noir",       id: 1592917505

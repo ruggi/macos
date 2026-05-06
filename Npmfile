@@ -1,0 +1,4 @@
+@mariozechner/pi-coding-agent
+
+# provides `hunk`, used as git's pager (configured in setup.sh)
+hunkdiff

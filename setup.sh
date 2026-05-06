@@ -11,8 +11,8 @@ else
   BLUE=''; GREEN=''; YELLOW=''; RED=''; CYAN=''
 fi
 
-TOTAL=10
-step() { printf '\n%s%s━━ [%d/%d] %s%s\n' "$BOLD" "$CYAN" "$1" "$TOTAL" "$2" "$RESET"; }
+STEP=0
+step() { STEP=$((STEP+1)); printf '\n%s%s━━ [%d] %s%s\n' "$BOLD" "$CYAN" "$STEP" "$1" "$RESET"; }
 ok()   { printf '  %s✓%s %s\n' "$GREEN"  "$RESET" "$*"; }
 run()  { printf '  %s→%s %s\n' "$BLUE"   "$RESET" "$*"; }
 warn() { printf '  %s!%s %s\n' "$YELLOW" "$RESET" "$*"; }
@@ -46,9 +46,9 @@ if ! confirm "signed in to the App Store?"; then
   exit 1
 fi
 
-# 1. Xcode Command Line Tools
+# Xcode Command Line Tools
 # Done first because git (needed for the next prompt) ships with CLT.
-step 1 "Xcode Command Line Tools"
+step "Xcode Command Line Tools"
 if xcode-select -p >/dev/null 2>&1; then
   ok "already installed"
 else
@@ -58,7 +58,7 @@ else
   exit 0
 fi
 
-# Collect git identity now so steps 2–8 can run unattended. Without these,
+# Collect git identity now so the unattended steps don't have to prompt. Without these,
 # git falls back to whoami@hostname, which on a Tailscale machine becomes
 # <host>.ts.net.
 GIT_NAME=$(git config --global --get user.name  2>/dev/null || true)
@@ -66,8 +66,8 @@ GIT_EMAIL=$(git config --global --get user.email 2>/dev/null || true)
 [[ -z "$GIT_NAME"  ]] && read -rp "  git user.name: "  GIT_NAME
 [[ -z "$GIT_EMAIL" ]] && read -rp "  git user.email: " GIT_EMAIL
 
-# 2. Homebrew
-step 2 "Homebrew"
+# Homebrew
+step "Homebrew"
 if command -v brew >/dev/null 2>&1; then
   ok "already installed"
 else
@@ -80,15 +80,15 @@ elif [[ -x /usr/local/bin/brew ]]; then
   eval "$(/usr/local/bin/brew shellenv)"
 fi
 
-# 3. Brew packages
-step 3 "Homebrew packages"
+# Brew packages
+step "Homebrew packages"
 run "brew bundle"
 brew bundle --file="$DIR/Brewfile"
 
-# 4. dotfiles via stow
+# dotfiles via stow
 # Cloned over HTTPS because the SSH agent + insteadOf rewrite aren't set up
-# until step 8. Re-stow on every run so partial states heal idempotently.
-step 4 "dotfiles (stow)"
+# until the 1Password step. Re-stow on every run so partial states heal idempotently.
+step "dotfiles (stow)"
 DOTFILES_DIR="$HOME/dotfiles"
 if [[ ! -d "$DOTFILES_DIR" ]]; then
   run "cloning ruggi/dotfiles"
@@ -99,23 +99,24 @@ fi
 run "stow common"
 stow -d "$DOTFILES_DIR" -t "$HOME" -R common
 
-# 5. rtk — Claude Code hook for token-optimized CLI output.
+# rtk — Claude Code hook for token-optimized CLI output.
 # Runs after stow so the symlinked settings.json exists before rtk patches it.
-step 5 "rtk (Claude Code hook)"
+step "rtk (Claude Code hook)"
 run "init"
 rtk init -g --auto-patch
 
-# 6. pi — agent harness (https://pi.dev), npm-installed.
-step 6 "pi (agent harness)"
-if command -v pi >/dev/null 2>&1; then
-  ok "already installed"
+# npm global packages (Npmfile)
+step "npm global packages"
+NPM_PACKAGES=$(grep -vE '^[[:space:]]*(#|$)' "$DIR/Npmfile" | tr '\n' ' ' || true)
+if [[ -n "$NPM_PACKAGES" ]]; then
+  run "npm install -g $NPM_PACKAGES"
+  npm install -g $NPM_PACKAGES
 else
-  run "npm install -g @mariozechner/pi-coding-agent"
-  npm install -g @mariozechner/pi-coding-agent
+  ok "Npmfile is empty"
 fi
 
-# 7. LazyVim — only if stow didn't drop an nvim config
-step 7 "LazyVim"
+# LazyVim — only if stow didn't drop an nvim config
+step "LazyVim"
 if [[ -e "$HOME/.config/nvim/init.lua" ]]; then
   ok "nvim config already present, skipping"
 else
@@ -125,8 +126,8 @@ else
   rm -rf "$HOME/.config/nvim/.git"
 fi
 
-# 8. 1Password SSH agent + git SSH signing
-step 8 "1Password SSH agent + git signing"
+# 1Password SSH agent + git SSH signing
+step "1Password SSH agent + git signing"
 
 SSH_CFG="$HOME/.ssh/config"
 SSH_BEGIN="# >>> 1Password SSH agent >>>"
@@ -164,14 +165,19 @@ git config --global gpg.format ssh
 git config --global gpg.ssh.program "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
 ok "git configured"
 
-# 9. macOS preferences
-step 9 "macOS preferences"
+# git config — general options not tied to SSH/signing.
+step "git config"
+git config --global core.pager "hunk pager"
+ok "git options set"
+
+# macOS preferences
+step "macOS preferences"
 run "applying"
 bash "$DIR/macos.sh"
 
-# 10. Cryptomator — vault on iCloud Drive holds the AI agent sessions.
+# Cryptomator — vault on iCloud Drive holds the AI agent sessions.
 # Launch it so the user can unlock the vault now (everything else is done).
-step 10 "Cryptomator"
+step "Cryptomator"
 if confirm "launch Cryptomator now to unlock your vault?"; then
   run "opening Cryptomator"
   open -a Cryptomator

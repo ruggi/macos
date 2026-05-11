@@ -44,7 +44,9 @@ cask "betterdisplay"
 cask "bettertouchtool"
 cask "mac-mouse-fix"
 cask "keepingyouawake"
+cask "orbstack"
 
 mas "TextSniper", id: 1528890965
 mas "Noir",       id: 1592917505
 mas "SponsorBlock", id: 1573461917
+mas "Wipr 2",      id: 1662217862

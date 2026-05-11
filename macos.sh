@@ -119,6 +119,8 @@ defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 # Drag windows by Ctrl+Cmd+dragging anywhere on them
 defaults write -g NSWindowShouldDragOnGesture -bool true
+# Don't hide all windows when clicking the wallpaper (Stage Manager-era behavior)
+defaults write com.apple.WindowManager EnableStandardClickToShowDesktop -bool false
 
 # --- Screen / screenshots -----------------------------------------------------
 
@@ -285,6 +287,6 @@ defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true
 
 # --- Restart affected apps ----------------------------------------------------
 
-for app in "Activity Monitor" "Dock" "Finder" "SystemUIServer" "cfprefsd"; do
+for app in "Activity Monitor" "Dock" "Finder" "SystemUIServer" "WindowManager" "cfprefsd"; do
   killall "$app" >/dev/null 2>&1 || true
 done
